@@ -1,0 +1,30 @@
+{ "name": "nglelinh/algorithms",
+  "description": "PHP Algorithms and Data Structures",
+  "license": "MIT",
+  "keywords": ["algorithms","data structures", "open", "source"],
+  "authors": [
+    {
+      "name": "nglelinh",
+      "email": "nglelinh@gmail.com"
+    }
+  ],
+  "require": {},
+  "require-dev": {
+    "squizlabs/php_codesniffer": "2.*",
+    "phpmd/phpmd": "2.1.*",
+    "sebastian/phpcpd": "2.0.*",
+    "pdepend/pdepend": "2.0.*",
+    "phploc/phploc": "2.0.*",
+    "phpunit/phpunit": "4.3.*",
+    "theseer/phpdox": "0.7.*"
+  },
+  "config": {
+    "bin-dir": "bin/",
+    "preferred-install": "dist"
+  },
+  "autoload": {
+    "psr-4": {
+      "Algorithms\\": "src"
+    }
+  }
+}
