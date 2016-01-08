@@ -37,32 +37,9 @@ Other things to include:
 
 There is no configuration yet
 
-## Usage
-
-Study for your next big company interview.
-
-## How to test the software
-
-just build/phpunit
-
 ## Known issues
 
 No issues yet
-
-## Getting help
-
-This package can be used to intuitiveliy. But if you have questions you can ask me anything.
-
-**Example**
-
-Feel free to mail mtkocak@gmail.com 
-
-## Getting involved
-
-You can fork this packade.
-
-I did not update [CONTRIBUTING](CONTRIBUTING.md) yet.
-
 
 ----
 
@@ -75,8 +52,6 @@ I did not update [CONTRIBUTING](CONTRIBUTING.md) yet.
 ----
 
 ## Credits and references
-
-I already gave credits above but, you can check;
 
 1.[PHP Psr-4 Template](http://culttt.com/2014/05/07/create-psr-4-php-package/)
 2.[Open Source Project Template](https://github.com/cfpb/open-source-project-template)
