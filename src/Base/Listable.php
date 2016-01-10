@@ -8,8 +8,10 @@ namespace Algorithms\Base;
  */
 interface Listable
 {
+
+
     /**
      * @return array
      */
     public function listAll();
-}
+}//end interface
