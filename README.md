@@ -10,10 +10,11 @@ Includes:
  - Double Linked List
  - BinarySearchTree
  - Sorting Algorithms
+ - Matrix 
+ - Linear Equations
  - Tests
  
 ## Installation
 
-1. Create a new directory.
-2. Copy these files into the new directory.
-3. composer install
+1. checkout project
+2. composer install
