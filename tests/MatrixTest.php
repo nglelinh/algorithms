@@ -1,6 +1,7 @@
 <?php
 
 use Algorithms\Linear\Matrix;
+use Algorithms\Linear\MatrixOperator;
 
 /**
  * Class MatrixTest
@@ -22,6 +23,11 @@ class MatrixTest extends PHPUnit_Framework_TestCase
      */
     private $m3;
 
+    /**
+     * @var MatrixOperatorInterface
+     */
+    private $operator;
+
     public function setUp()
     {
         parent::setUp();
@@ -41,6 +47,8 @@ class MatrixTest extends PHPUnit_Framework_TestCase
                 [0, 0, 3]
             ]
         );
+
+        $this->operator = new MatrixOperator();
     }
 
     public function testToArray()
@@ -60,7 +68,7 @@ class MatrixTest extends PHPUnit_Framework_TestCase
             [3, 3, 3],
             [3, 3, 3],
         ],
-            $this->m1->add($this->m2)->toArray());
+            $this->operator->add($this->m1, $this->m2)->toArray());
     }
 
     public function testSubtract()
@@ -70,7 +78,7 @@ class MatrixTest extends PHPUnit_Framework_TestCase
             [-1, -1, -1],
             [-1, -1, -1],
         ],
-            $this->m1->subtract($this->m2)->toArray());
+            $this->operator->subtract($this->m1, $this->m2)->toArray());
     }
 
     public function testDeterminant()
@@ -82,7 +90,7 @@ class MatrixTest extends PHPUnit_Framework_TestCase
 
     public function testScalarMultiply()
     {
-        self::assertEquals($this->m2->toArray(), $this->m1->scalarMultiply(2)->toArray());
+        self::assertEquals($this->m2->toArray(), $this->operator->scalarMultiply($this->m1, 2)->toArray());
     }
 
     public function testInvert()
@@ -92,7 +100,7 @@ class MatrixTest extends PHPUnit_Framework_TestCase
             [0, 1 / 2, 0],
             [0, 0, 1 / 3]
         ],
-            $this->m3->invert()->toArray());
+            $this->operator->invert($this->m3)->toArray());
     }
 
     public function testMultiply()
@@ -101,8 +109,69 @@ class MatrixTest extends PHPUnit_Framework_TestCase
             [6, 6, 6],
             [6, 6, 6],
             [6, 6, 6]
-        ], $this->m1->multiply($this->m2)->toArray());
+        ], $this->operator->multiply($this->m1, $this->m2)->toArray());
     }
 
+    public function testIdentity()
+    {
+        $matrix = new Matrix([
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],
+        ]);
+
+        self::assertTrue($matrix->isIdentity());
+
+        $matrix = new Matrix([
+            [3, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],
+        ]);
+        self::assertFalse($matrix->isIdentity());
+    }
+
+    public function testDiagonal()
+    {
+        $matrix = new Matrix([
+            [1, 0, 0],
+            [0, 3, 0],
+            [0, 0, 1],
+        ]);
+
+        self::assertTrue($matrix->isDiagonal());
+
+        $matrix = new Matrix([
+            [3, 0, 0],
+            [1, 1, 0],
+            [0, 0, 1],
+        ]);
+        self::assertFalse($matrix->isDiagonal());
+    }
+
+    public function testTranspose()
+    {
+        $input  = [
+            [1, 0, 0],
+            [0, 3, 0],
+            [0, 0, 1],
+        ];
+        $matrix = new Matrix($input);
+
+        self::assertEquals($input, $this->operator->transpose($matrix)->toArray());
+
+        $input  = [
+            [1, 0, 0],
+            [0, 3, 0],
+            [5, 0, 1],
+        ];
+        $matrix = new Matrix($input);
+
+        $output = [
+            [1, 0, 5],
+            [0, 3, 0],
+            [0, 0, 1],
+        ];
+        self::assertEquals($output, $this->operator->transpose($matrix)->toArray());
+    }
 
 }

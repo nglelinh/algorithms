@@ -9,43 +9,9 @@ namespace Algorithms\Linear;
 interface MatrixInterface
 {
     /**
-     * @param MatrixInterface $matrix
-     * @return MatrixInterface
-     */
-    public function add(MatrixInterface $matrix);
-
-    /**
-     * @param MatrixInterface $second
-     * @return MatrixInterface
-     */
-    public function subtract(MatrixInterface $second);
-
-    /**
-     * @param MatrixInterface $second
-     * @return MatrixInterface
-     */
-    public function multiply(MatrixInterface $second);
-
-    /**
-     * @param MatrixInterface $second
-     * @return MatrixInterface
-     */
-    public function strassenMultiply(MatrixInterface $second);
-
-    /**
      * @return float
      */
     public function determinant();
-
-    /**
-     * @return MatrixInterface
-     */
-    public function invert();
-
-    /**
-     * @return MatrixInterface
-     */
-    public function transpose();
 
     /**
      * @param $row
@@ -55,8 +21,8 @@ interface MatrixInterface
     public function getElement($row, $column);
 
     /**
-     * @param int $row
-     * @param int $column
+     * @param int   $row
+     * @param int   $column
      * @param float $value
      */
     public function setElement($row, $column, $value);
@@ -82,9 +48,12 @@ interface MatrixInterface
     public function isSquare();
 
     /**
-     *
-     * @param float $value
-     * @return Matrix
+     * @return bool
      */
-    public function scalarMultiply($value);
+    public function isIdentity();
+
+    /**
+     * @return bool
+     */
+    public function isDiagonal();
 }

@@ -2,6 +2,7 @@
 use Algorithms\Linear\Equation;
 use Algorithms\Linear\InverseEquationSolver;
 use Algorithms\Linear\Matrix;
+use Algorithms\Linear\MatrixOperator;
 
 /**
  * Class EquationTest
@@ -38,7 +39,7 @@ class EquationTest extends PHPUnit_Framework_TestCase {
 
     public function testInverseSolver()
     {
-        $solver = new InverseEquationSolver();
+        $solver = new InverseEquationSolver(new MatrixOperator());
         self::assertEquals(
             array(
                 array(1),

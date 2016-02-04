@@ -3,6 +3,19 @@
 namespace Algorithms\Linear;
 
 class InverseEquationSolver implements EquationSolverInterface {
+    /**
+     * @var MatrixOperatorInterface
+     */
+    private $operator;
+
+    /**
+     * InverseEquationSolver constructor.
+     * @param MatrixOperatorInterface $operator
+     */
+    public function __construct(MatrixOperatorInterface $operator)
+    {
+        $this->operator = $operator;
+    }
 
     /**
      * @param EquationInterface $equation
@@ -10,6 +23,6 @@ class InverseEquationSolver implements EquationSolverInterface {
      */
     public function solve(EquationInterface $equation)
     {
-        return $equation->getCoefficients()->invert()->multiply($equation->getConstants());
+        return $this->operator->multiply($this->operator->invert($equation->getCoefficients()), $equation->getConstants());
     }
 }
