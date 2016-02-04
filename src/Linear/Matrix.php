@@ -75,8 +75,8 @@ class Matrix implements MatrixInterface
     }
 
     /**
-     * @param $row
-     * @param $column
+     * @param int $row
+     * @param int $column
      * @return float
      */
     public function getElement($row, $column)
@@ -162,5 +162,105 @@ class Matrix implements MatrixInterface
         }
 
         return true;
+    }
+
+    /**
+     * @param int $row
+     * @return array
+     */
+    public function getRow($row)
+    {
+        return $this->data[$row];
+    }
+
+    /**
+     * @param int   $row
+     * @param array $value
+     * @throws InvalidArgumentException
+     */
+    public function setRow($row, array $value)
+    {
+        if (count($value) !== $this->columns()) {
+            throw new InvalidArgumentException();
+        }
+
+        $this->data[$row] = array_values($value);
+    }
+
+    /**
+     * @param int $column
+     * @return array
+     */
+    public function getColumn($column)
+    {
+        $return = [];
+        for ($row = 0; $row < $this->rows(); $row++) {
+            $return[$row] = $this->getElement($row, $column);
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param int   $column
+     * @param array $value
+     * @throws InvalidArgumentException
+     */
+    public function setColumn($column, array $value)
+    {
+        if ($value->rows() !== 1 OR $value->columns() !== $this->columns()) {
+            throw new InvalidArgumentException();
+        }
+
+        for ($row = 0; $row < $this->rows(); $row++) {
+            $return[$row] = $this->setElement($row, $column[$row]);
+        }
+    }
+
+    /**
+     * @param int $row1
+     * @param int $row2
+     */
+    public function swapRows($row1, $row2)
+    {
+        $temp = $this->getRow($row1);
+        $this->setRow($row1, $this->getRow($row2));
+        $this->setRow($row2, $temp);
+    }
+
+    /**
+     * @param int $column1
+     * @param int $column2
+     */
+    public function swapColumns($column1, $column2)
+    {
+        $temp = $this->getColumn($column1);
+        $this->setColumn($column1, $this->getColumn($column2));
+        $this->setColumn($column2, $temp);
+    }
+
+    /**
+     * @return bool
+     */
+    public function invertible()
+    {
+        return $this->determinant() !== 0;
+    }
+
+    /**
+     * @return Vector
+     * @throws InvalidArgumentException
+     */
+    public function toVector()
+    {
+        if ($this->rows() === 1) {
+            return new Vector($this->getRow(0));
+        }
+
+        if ($this->columns() === 1) {
+            return new Vector($this->getColumn(0));
+        }
+
+        throw new InvalidArgumentException();
     }
 }

@@ -143,4 +143,75 @@ class MatrixOperator implements MatrixOperatorInterface
     public function strassenMultiply(MatrixInterface $m1, MatrixInterface $m2)
     {
     }
+
+    /**
+     * @param MatrixInterface $matrix
+     * @return array
+     * array($C, $P, $singular, $even) - C = L + U - E
+     * $singular === true for singular matrix
+     * $even - for det
+     */
+    public function lupDecomposition(MatrixInterface $matrix)
+    {
+        $size = $matrix->rows();
+        $C = clone $matrix;
+        $P = array();
+        for ($i = 0; $i < $size; $i++) {
+            $P[$i] = $i;
+        }
+        $singular = false;
+        $even     = true;
+        for ($i = 0; $i < $size; $i++) {
+            //поиск опорного элемента
+            $pivotValue = 0;
+            $pivot = -1;
+            for ($row = $i; $row < $size; $row++) {
+                if (abs($C->getElement($row, $i)) > $pivotValue) {
+                    $pivotValue = abs($C->getElement($row, $i));
+                    $pivot = $row;
+                }
+            }
+            if ($pivotValue == 0) {
+                $singular = true;
+                break;
+            }
+            //меняем местами i-ю строку и строку с опорным элементом
+            if ($pivot !== $i) {
+                list($P[$i], $P[$pivot]) = array($P[$pivot], $P[$i]);
+                $C->swapRows($pivot, $i);
+                $even = !$even;
+            }
+            for ($j = $i + 1; $j < $size; $j++) {
+                $temp = $C->getElement($j, $i) / $C->getElement($i, $i);
+                $C->setElement($j, $i, $temp);
+                for($k = $i + 1; $k < $size; $k++) {
+                    $temp = $C->getElement($j, $k) - $C->getElement($j, $i) * $C->getElement($i, $k);
+                    $C->setElement($j, $k, $temp);
+                }
+            }
+        }
+        return array($C, $P, $singular, $even);
+    }
+
+    /**
+     * @param MatrixInterface $matrix
+     * @return Vector
+     */
+    public function getEigenVector(MatrixInterface $matrix)
+    {
+        $iterations = 20;
+        $dim        = $matrix->rows();
+        for ($i = 0; $i < $dim; $i++) {
+            $value[] = 1;
+        }
+
+        $b = new Vector($value);
+
+        for ($i = 0; $i < $iterations; $i++) {
+            $b      = $this->multiply($matrix, $b->toColumnMatrix())->toVector();
+            $b      = $b->scalarMultiply(1/$b->norm());
+        }
+
+        return $b;
+    }
 }

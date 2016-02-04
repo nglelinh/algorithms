@@ -6,6 +6,10 @@ namespace Algorithms\Linear;
  * Interface MatrixInterface
  * @package Algorithms\Linear
  */
+/**
+ * Interface MatrixInterface
+ * @package Algorithms\Linear
+ */
 interface MatrixInterface
 {
     /**
@@ -14,8 +18,8 @@ interface MatrixInterface
     public function determinant();
 
     /**
-     * @param $row
-     * @param $column
+     * @param int $row
+     * @param int $column
      * @return float
      */
     public function getElement($row, $column);
@@ -56,4 +60,50 @@ interface MatrixInterface
      * @return bool
      */
     public function isDiagonal();
+
+    /**
+     * @param int $row
+     * @return array
+     */
+    public function getRow($row);
+
+    /**
+     * @param int $row
+     * @param array $value
+     */
+    public function setRow($row, array $value);
+
+    /**
+     * @param int $column
+     * @return array
+     */
+    public function getColumn($column);
+
+    /**
+     * @param int $column
+     * @param array $value
+     */
+    public function setColumn($column, array $value);
+
+    /**
+     * @param int $row1
+     * @param int $row2
+     */
+    public function swapRows($row1, $row2);
+
+    /**
+     * @param int $column1
+     * @param int $column2
+     */
+    public function swapColumns($column1, $column2);
+
+    /**
+     * @return bool
+     */
+    public function invertible();
+
+    /**
+     * @return Vector
+     */
+    public function toVector();
 }

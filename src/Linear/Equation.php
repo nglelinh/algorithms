@@ -42,7 +42,7 @@ class Equation implements EquationInterface {
      */
     public function solvable()
     {
-        return $this->coefficients->determinant() !== 0;
+        return $this->coefficients->invertible();
     }
 
     /**

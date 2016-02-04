@@ -2,6 +2,10 @@
 
 namespace Algorithms\Linear;
 
+/**
+ * Interface MatrixOperatorInterface
+ * @package Algorithms\Linear
+ */
 interface MatrixOperatorInterface
 {
     /**
@@ -51,4 +55,16 @@ interface MatrixOperatorInterface
      * @return Matrix
      */
     public function scalarMultiply(MatrixInterface $matrix, $value);
+
+    /**
+     * @param MatrixInterface $matrix
+     * @return array
+     */
+    public function lupDecomposition(MatrixInterface $matrix);
+
+    /**
+     * @param MatrixInterface $matrix
+     * @return Vector
+     */
+    public function getEigenVector(MatrixInterface $matrix);
 }

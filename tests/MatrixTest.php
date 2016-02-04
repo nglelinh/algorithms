@@ -24,7 +24,7 @@ class MatrixTest extends PHPUnit_Framework_TestCase
     private $m3;
 
     /**
-     * @var MatrixOperatorInterface
+     * @var MatrixOperator
      */
     private $operator;
 
@@ -174,4 +174,37 @@ class MatrixTest extends PHPUnit_Framework_TestCase
         self::assertEquals($output, $this->operator->transpose($matrix)->toArray());
     }
 
+    public function testLupDecomposition()
+    {
+        $input  = [
+            [1, 0, 1],
+            [0, 3, 0],
+            [5, 0, 1],
+        ];
+        $matrix = new Matrix($input);
+
+        $output = [
+            [1, 0, 5],
+            [0, 3, 0],
+            [0, 0, 1],
+        ];
+        self::assertEquals($output, $this->operator->lupDecomposition($matrix));
+    }
+
+    public function testEigenVector()
+    {
+
+        $input  = [
+            [1, 0, 1],
+            [0, 3, 0],
+            [5, 0, 1],
+        ];
+        $matrix = new Matrix($input);
+
+        self::assertEquals([
+            0.40514439225657484,
+            0.12307775598439666,
+            0.90593039876410797
+        ], $this->operator->getEigenVector($matrix)->toArray());
+    }
 }
