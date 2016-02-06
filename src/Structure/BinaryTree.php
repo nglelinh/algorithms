@@ -1,10 +1,12 @@
 <?php
-namespace Algorithms;
+
+namespace Algorithms\Structure;
 
 use Algorithms\Base\BaseTree;
 use Algorithms\Base\Searchable;
 use Algorithms\Base\Traversable;
 use Algorithms\Node\Tree\BinaryTreeNode;
+use Algorithms\Structure\Queue;
 
 /**
  * Class BinaryTree

@@ -1,5 +1,6 @@
 <?php
-use Algorithms\SingleLinkedList;
+
+use Algorithms\Structure\SingleLinkedList;
 
 class SingleLinkedListTest extends PHPUnit_Framework_TestCase
 {

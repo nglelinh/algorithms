@@ -1,6 +1,6 @@
 <?php
 
-namespace Algorithms;
+namespace Algorithms\Structure;
 
 use Algorithms\Base\NodeInterface;
 use Algorithms\Node\Tree\BinaryTreeNode;

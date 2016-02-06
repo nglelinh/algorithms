@@ -179,16 +179,16 @@ class MatrixTest extends PHPUnit_Framework_TestCase
         $input  = [
             [1, 0, 1],
             [0, 3, 0],
-            [5, 0, 1],
+            [2, 0, 1],
         ];
         $matrix = new Matrix($input);
 
         $output = [
-            [1, 0, 5],
+            [2, 0, 1],
             [0, 3, 0],
-            [0, 0, 1],
+            [0, 0, 0.5],
         ];
-        self::assertEquals($output, $this->operator->lupDecomposition($matrix));
+        self::assertEquals($output, $this->operator->lupDecomposition($matrix)->toArray());
     }
 
     public function testEigenVector()

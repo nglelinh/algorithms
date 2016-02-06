@@ -1,5 +1,6 @@
 <?php
-namespace Algorithms;
+
+namespace Algorithms\Structure;
 
 use Algorithms\Node\Tree\BinarySearchTreeNode;
 

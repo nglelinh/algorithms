@@ -1,7 +1,7 @@
 <?php
 
-use Algorithms\DoubleLinkedList;
-use Algorithms\Sortable;
+use Algorithms\Structure\DoubleLinkedList;
+use Algorithms\Structure\Sortable;
 
 /**
  * Class SortableTest

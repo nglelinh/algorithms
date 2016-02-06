@@ -1,4 +1,6 @@
-<?php namespace Algorithms;
+<?php
+
+namespace Algorithms\Structure;
 
 use Algorithms\Node\LinkedList\LinkedListNode;
 

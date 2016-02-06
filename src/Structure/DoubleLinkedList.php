@@ -1,4 +1,6 @@
-<?php namespace Algorithms;
+<?php
+
+namespace Algorithms\Structure;
 
 use Algorithms\Node\LinkedList\DoubleLinkedListNode;
 
@@ -8,7 +10,6 @@ use Algorithms\Node\LinkedList\DoubleLinkedListNode;
  */
 class DoubleLinkedList extends LinkedList
 {
-
 
     /**
      * @param $value
@@ -28,9 +29,7 @@ class DoubleLinkedList extends LinkedList
         }
 
         $this->count++;
-
     }//end push()
-
 
     /**
      * Deletes from end, and returns value.
@@ -57,9 +56,7 @@ class DoubleLinkedList extends LinkedList
         }
 
         return false;
-
     }//end pop()
-
 
     /**
      * Add to beginning. Reverse of push();
@@ -88,9 +85,7 @@ class DoubleLinkedList extends LinkedList
 
             return true;
         }
-
     }//end add()
-
 
     /**
      * @param $key
@@ -120,9 +115,7 @@ class DoubleLinkedList extends LinkedList
         }
 
         return false;
-
     }//end insertAfter()
-
 
     /**
      * @param $key
@@ -153,9 +146,7 @@ class DoubleLinkedList extends LinkedList
         }
 
         return false;
-
     }//end insertBefore()
-
 
     /**
      * @param mixed $offset
@@ -196,9 +187,7 @@ class DoubleLinkedList extends LinkedList
         }//end while
 
         throw new \OutOfBoundsException();
-
     }//end offsetUnset()
-
 
     /**
      * Delete from beginning. Reverse of pop();
@@ -222,6 +211,5 @@ class DoubleLinkedList extends LinkedList
         }
 
         return false;
-
     }//end delete()
 }//end class

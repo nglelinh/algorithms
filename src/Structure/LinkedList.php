@@ -1,5 +1,6 @@
 <?php
-namespace Algorithms;
+
+namespace Algorithms\Structure;
 
 use Algorithms\Base\Listable;
 use Algorithms\Base\Searchable;

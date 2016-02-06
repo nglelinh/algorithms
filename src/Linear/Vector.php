@@ -80,4 +80,26 @@ class Vector implements VectorInterface {
         }
         return new Vector($result);
     }
+
+    /**
+     * @param int $position
+     * @return float
+     */
+    public function getElement($position)
+    {
+        return $this->data[$position];
+    }
+
+    /**
+     * @param VectorInterface $vector
+     * @return float
+     */
+    public function dotProduct(VectorInterface $vector)
+    {
+        $result = 0;
+        for ($i=0; $i<count($this->data); $i++) {
+            $result += $this->getElement($i) * $vector->getElement($i);
+        }
+        return $result;
+    }
 }

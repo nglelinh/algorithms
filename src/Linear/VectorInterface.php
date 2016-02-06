@@ -29,7 +29,19 @@ interface VectorInterface {
 
     /**
      * @param $value
-     * @return Vector
+     * @return VectorInterface
      */
     public function scalarMultiply($value);
+
+    /**
+     * @param int $position
+     * @return float
+     */
+    public function getElement($position);
+
+    /**
+     * @param VectorInterface $vector
+     * @return float
+     */
+    public function dotProduct(VectorInterface $vector);
 }

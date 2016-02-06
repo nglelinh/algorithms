@@ -1,5 +1,6 @@
 <?php
-namespace Algorithms;
+
+namespace Algorithms\Structure;
 
 use Algorithms\Base\BaseNode;
 use Algorithms\Node\LinkedList\DoubleLinkedListNode;

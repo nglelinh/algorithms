@@ -1,5 +1,6 @@
 <?php
-use Algorithms\Stack;
+
+use Algorithms\Structure\Stack;
 
 class StackTest extends PHPUnit_Framework_TestCase
 {

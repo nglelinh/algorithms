@@ -1,7 +1,7 @@
 <?php
-use Algorithms\BinarySearchTree;
-use Algorithms\BinaryTree;
+use Algorithms\Structure\BinaryTree;
 use Algorithms\Node\Tree\BinaryTreeNode;
+use Algorithms\Structure\BinarySearchTree;
 
 class BinarySearchTreeTest extends PHPUnit_Framework_TestCase
 {
