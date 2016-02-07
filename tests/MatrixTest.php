@@ -202,9 +202,9 @@ class MatrixTest extends PHPUnit_Framework_TestCase
         $matrix = new Matrix($input);
 
         self::assertEquals([
-            0.40514439225657484,
-            0.12307775598439666,
-            0.90593039876410797
-        ], $this->operator->getEigenVector($matrix)->toArray());
+            0.4,
+            0,
+            0.9
+        ], $this->operator->getEigenVector($matrix)->round(1)->toArray());
     }
 }

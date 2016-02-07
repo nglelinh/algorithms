@@ -6,7 +6,8 @@ namespace Algorithms\Linear;
  * Class Vector
  * @package Algorithms\Linear
  */
-class Vector implements VectorInterface {
+class Vector implements VectorInterface
+{
 
     /**
      * @var array
@@ -49,10 +50,9 @@ class Vector implements VectorInterface {
      */
     public function toColumnMatrix()
     {
-        $return = array();
+        $return = [];
 
-        foreach ($this->data as $value)
-        {
+        foreach ($this->data as $value) {
             $return[] = [$value];
         }
 
@@ -73,11 +73,11 @@ class Vector implements VectorInterface {
      */
     public function scalarMultiply($value)
     {
-        $result = array();
-        foreach ($this->data as $element)
-        {
+        $result = [];
+        foreach ($this->data as $element) {
             $result[] = $element * $value;
         }
+
         return new Vector($result);
     }
 
@@ -97,9 +97,23 @@ class Vector implements VectorInterface {
     public function dotProduct(VectorInterface $vector)
     {
         $result = 0;
-        for ($i=0; $i<count($this->data); $i++) {
+        for ($i = 0; $i < count($this->data); $i++) {
             $result += $this->getElement($i) * $vector->getElement($i);
         }
+
         return $result;
+    }
+
+    /**
+     * @param $precision
+     * @return VectorInterface
+     */
+    public function round($precision)
+    {
+        foreach ($this->data as &$value) {
+            $value = round($value, $precision);
+        }
+
+        return $this;
     }
 }

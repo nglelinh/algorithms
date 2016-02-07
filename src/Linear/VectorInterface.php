@@ -6,7 +6,8 @@ namespace Algorithms\Linear;
  * Interface VectorInterface
  * @package Algorithms\Linear
  */
-interface VectorInterface {
+interface VectorInterface
+{
     /**
      * @return float
      */
@@ -44,4 +45,10 @@ interface VectorInterface {
      * @return float
      */
     public function dotProduct(VectorInterface $vector);
+
+    /**
+     * @param $precision
+     * @return VectorInterface
+     */
+    public function round($precision);
 }
