@@ -97,9 +97,7 @@ class CART
     {
         $delta_I_array = [];
 
-        $dtdata              = self::makeDtData($data, $base, $base_value);
-        $dtdata->split_key   = $split_key;
-        $dtdata->split_value = $split_value;
+        $dtdata = self::makeDtData($data, $base, $base_value, $split_key, $split_value);
 
         $dtnode           = new DecisionTreeNode($dtdata);
         $dtnode->terminal = false;
@@ -146,12 +144,16 @@ class CART
      * @param $data
      * @param $base
      * @param $value
+     * @param $split_key
+     * @param $split_value
      * @return DecisionTreeData
      */
-    private function makeDtData($data, $base, $value)
+    private function makeDtData($data, $base, $value, $split_key, $split_value)
     {
-        $decisionTreeData         = new DecisionTreeData();
-        $decisionTreeData->number = count($data);
+        $decisionTreeData              = new DecisionTreeData();
+        $decisionTreeData->number      = count($data);
+        $decisionTreeData->split_key   = $split_key;
+        $decisionTreeData->split_value = $split_value;
 
         $split_array = ArrayService::split_by_key($data, $base);
 
