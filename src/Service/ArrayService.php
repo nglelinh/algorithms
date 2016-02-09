@@ -14,7 +14,7 @@ class ArrayService
      * @return array
      * returns a value that is included in the $key variable
      */
-    public function filter_sub_array_by_key($data, $key)
+    public function get_sub_array_by_key($data, $key)
     {
         $values = [];
         foreach ($data as $value) {
@@ -37,7 +37,7 @@ class ArrayService
         }
 
         $split_array = [];
-        $feat_array  = self::filter_sub_array_by_key($data, $key);
+        $feat_array  = self::get_sub_array_by_key($data, $key);
 
         // Calculate the probability of occurrence of each value of the predictor variables
         foreach ($feat_array as $value) {
@@ -58,25 +58,25 @@ class ArrayService
      * @param $data
      * @return array
      */
-    public function list_comb($data)
+    public function list_combine($data)
     {
-        $result = [];
+        $combinations = [];
         $return = [];
 
         // extracts a combination
         for ($i = 0; $i < count($data) - 1; $i++) {
             $res = self::calc_combination($data, $i + 1);
             foreach ($res as $value) {
-                $result[] = $value;
+                $combinations[] = $value;
             }
         }
 
-        // Eliminate duplication
+        // Eliminate duplication and long combinations
         $half_length = floor(count($data) / 2);
         $flg    = count($data) % 2;
         $max = max($data);
 
-        foreach ($result as $value) {
+        foreach ($combinations as $value) {
             if (count($value) <= $half_length) {
                 if ($flg === 0) {
                     if (!array_search($max, $value)) {

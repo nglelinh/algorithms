@@ -110,7 +110,7 @@ class DecisionTree extends BinaryTree implements DecisionTreeInterface
         $right_value = $node->getRight()->getData()->split_value;
 
         // To determine whether a continuous variable
-        $feat_array = ArrayService::filter_sub_array_by_key($this->data, $split_key);
+        $feat_array = ArrayService::get_sub_array_by_key($this->data, $split_key);
         if (count($feat_array) > 3 && is_numeric($feat_array[0])) {
             if (!(strstr('<=x', $left_value) == false)) {
                 $flg    = 1;
@@ -162,33 +162,30 @@ class DecisionTree extends BinaryTree implements DecisionTreeInterface
         $multiple_param   = [];
         $continuous_param = [];
 
-        // 各変数の種類を確認 (3種類以上ある変数はどれか)
+        // Check the type of each variable
         $keys = array_keys($data[0]);
-        foreach ($keys as $k => $key) {
-            // 目的変数は対象外 
+        foreach ($keys as $key) {
+            // objective var is excluded
             if ($key == $base_key) {
                 continue;
             }
 
-            // 「連続変数」と「多値変数」の判断
-            $feat_array = ArrayService::filter_sub_array_by_key($data, $key);
+            // Determined "continuous variables" of the "multi-variable"
+            $feat_array = ArrayService::get_sub_array_by_key($data, $key);
             if (count($feat_array) >= 3) {
                 if (is_numeric($feat_array[0])) {
-                    array_push($continuous_param, $key);
+                    $continuous_param[] = $key;
                 } else {
-                    array_push($multiple_param, $key);
+                    $multiple_param[] = $key;
                 }
             }
         }
 
-        // 2値変数へ圧縮
-        foreach ($multiple_param as $key => $pred) {
-            // 指定した多値変数を2値変数に圧縮する
-            $data = $this->multiple_to_binary($data, $base_key, $pred);
+        foreach ($multiple_param as $param_name) {
+            $data = $this->multiple_to_binary($data, $base_key, $param_name);
         }
-        foreach ($continuous_param as $key => $pred) {
-            // 指定した連続変数を2値変数に圧縮する
-            $data = $this->continuous_to_binary($data, $base_key, $pred);
+        foreach ($continuous_param as $key => $param_name) {
+            $data = $this->continuous_to_binary($data, $base_key, $param_name);
         }
 
         return $data;
@@ -202,7 +199,7 @@ class DecisionTree extends BinaryTree implements DecisionTreeInterface
      */
     private function continuous_to_binary($data, $base_key, $pred)
     {
-        $feat_array = ArrayService::filter_sub_array_by_key($data, $pred);
+        $feat_array = ArrayService::get_sub_array_by_key($data, $pred);
 
         asort($feat_array);
         $combs = [];
@@ -240,35 +237,36 @@ class DecisionTree extends BinaryTree implements DecisionTreeInterface
     /**
      * @param $data
      * @param $base
-     * @param $pred
+     * @param $param_name
      * @return array
      */
-    private function multiple_to_binary($data, $base, $pred)
+    private function multiple_to_binary($data, $base, $param_name)
     {
-        $feat_array = ArrayService::filter_sub_array_by_key($data, $pred);
+        $values = ArrayService::get_sub_array_by_key($data, $param_name);
 
-        $combs = ArrayService::list_comb($feat_array);
+        $combinations  = ArrayService::list_combine($values);
+        $delta_I_array = [];
 
-        foreach ($combs as $comb_key => $comb) {
-            $tmp_data                 = $this->to_binary_data($data, $pred, $comb, 'type1', 'type2');
-            $delta_I_array[$comb_key] = CART::calc_delta_I($tmp_data, $base, $pred);
+        foreach ($combinations as $combination) {
+            $binary_data     = $this->to_binary_data($data, $param_name, $combination, 'type1', 'type2');
+            $delta_I_array[] = CART::calc_delta_I($binary_data, $base, $param_name);
         }
 
         $max_key = array_search(max($delta_I_array), $delta_I_array);
 
         $type1_name = "";
         $type2_name = "";
-        foreach ($feat_array as $key => $value) {
-            if (in_array($value, $combs[$max_key])) {
+        foreach ($values as $key => $value) {
+            if (in_array($value, $combinations[$max_key])) {
                 $type1_name .= $value;
             } else {
                 $type2_name .= $value;
             }
         }
 
-        $tmp_data = $this->to_binary_data($data, $pred, $combs[$max_key], $type1_name, $type2_name);
+        $binary_data = $this->to_binary_data($data, $param_name, $combinations[$max_key], $type1_name, $type2_name);
 
-        return $tmp_data;
+        return $binary_data;
     }
 
     /**

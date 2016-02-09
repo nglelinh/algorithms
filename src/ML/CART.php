@@ -49,7 +49,7 @@ class CART
         $odds = [];
 
         // Extracte the number of individuals each value of the predictor variables
-        $feat_array = ArrayService::filter_sub_array_by_key($data, $base);
+        $feat_array = ArrayService::get_sub_array_by_key($data, $base);
 
         // Calculate the probability of occurrence of each value of the predictor variables
         foreach ($feat_array as $value) {
