@@ -44,11 +44,11 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
     public function testID3()
     {
         $dec_tree = new ID3();
-        $dec_tree->setTrainingData($this->csv_to_array('historical_data.csv'));
+        $dec_tree->setTrainingData($this->csv_to_array('sampling_travel_data.csv'));
         echo "Decision tree using ID3:\n";
         $dec_tree->display();
-//        echo "Prediction on new data set\n";
-//        $dec_tree->predict_outcome($this->csv_to_array('input_data.csv'));
+        echo "Prediction on new data set\n";
+        $dec_tree->predict_outcome($this->csv_to_array('input_travel_data.csv'));
     }
 
     private function csv_to_array($filename = '', $delimiter = ',')

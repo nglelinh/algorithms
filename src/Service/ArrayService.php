@@ -142,4 +142,15 @@ class ArrayService
 
         return ($new_data);
     }
+
+    public function possible_values($samples, $attribute)
+    {
+        $possible_values_count = [];
+        foreach ($samples as $sample) {
+            $possible_values_count[$sample[$attribute]] = array_key_exists($sample[$attribute],
+                $possible_values_count) ? $possible_values_count[$sample[$attribute]] + 1 : 1;
+        }
+
+        return $possible_values_count;
+    }
 }

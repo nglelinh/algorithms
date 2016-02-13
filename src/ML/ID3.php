@@ -2,6 +2,8 @@
 
 namespace Algorithms\ML;
 
+use Algorithms\Base\BaseNode;
+use Algorithms\Base\BaseTree;
 use Algorithms\Linear\InvalidArgumentException;
 use Algorithms\Service\ArrayService;
 
@@ -9,25 +11,8 @@ use Algorithms\Service\ArrayService;
  * Class Tree
  * @package Algorithms\ML
  */
-class Tree
+class Tree extends BaseTree
 {
-    /**
-     * @var
-     */
-    protected $root;
-
-    /**
-     * Tree constructor.
-     * @param $root
-     */
-    public function __construct($root)
-    {
-        $this->root = $root;
-    }
-
-    /**
-     *
-     */
     public function display()
     {
         $this->root->display(0);
@@ -38,25 +23,21 @@ class Tree
  * Class Node
  * @package Algorithms\ML
  */
-class Node
+class Node extends BaseNode
 {
-    /**
-     * @var
-     */
-    public $value;
     /**
      * @var array
      */
-    public $namedBranches;
+    public $children;
 
     /**
      * Node constructor.
-     * @param $new_item
+     * @param $data
      */
-    public function __construct($new_item)
+    public function __construct($data)
     {
-        $this->value         = $new_item;
-        $this->namedBranches = [];
+        $this->data     = $data;
+        $this->children = [];
     }
 
     /**
@@ -64,20 +45,12 @@ class Node
      */
     public function display($level)
     {
-        echo $this->value . "\n";
-        foreach ($this->namedBranches as $b => $child_node) {
-            echo str_repeat(" ", ($level + 1) * 4) . str_repeat("-", 14 / 2 - strlen($b) / 2) . $b . str_repeat("-",
-                    14 / 2 - strlen($b) / 2) . ">";
+        echo $this->getData() . "\n";
+        foreach ($this->children as $name => $child_node) {
+            echo str_repeat(" ", ($level + 1) * 4) . str_repeat("-", 14 / 2 - strlen($name) / 2) . $name . str_repeat("-",
+                    14 / 2 - strlen($name) / 2) . ">";
             $child_node->display($level + 1);
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function get_parent()
-    {
-        return ($this->tree);
     }
 }
 
@@ -109,9 +82,8 @@ class ID3 extends Tree
         foreach ($data as $k => $row) {
             $row['result'] = $this->predict($this->root, $row);
             $data[$k]      = $row;
+            echo "\n======";
         }
-        echo "\n";
-        print_r($data);
     }
 
     /**
@@ -125,23 +97,23 @@ class ID3 extends Tree
     }
 
     /**
-     * @param $node
+     * @param Node $node
      * @param $data_row
      * @return null
      */
-    private function predict($node, $data_row)
+    private function predict(Node $node, $data_row)
     {
         //we have reached a leaf node
-        if (!count($node->namedBranches)) {
-            print_r("\nReturning " . $node->value);
+        if (!count($node->children)) {
+            print_r("\nReturning " . $node->getData());
 
-            return $node->value;
+            return $node->getData();
         }
-        if (array_key_exists($node->value, $data_row)) {
-            print_r("\nValue of " . $node->value . " is " . $data_row[$node->value]);
-            if (array_key_exists($data_row[$node->value], $node->namedBranches)) {
-                print_r("\nBranch " . $data_row[$node->value] . " exists and leads to node " . $node->namedBranches[$data_row[$node->value]]->value);
-                $next_node = $node->namedBranches[$data_row[$node->value]];
+        if (array_key_exists($node->getData(), $data_row)) {
+            print_r("\nValue of " . $node->getData() . " is " . $data_row[$node->getData()]);
+            if (array_key_exists($data_row[$node->getData()], $node->children)) {
+                print_r("\nBranch " . $data_row[$node->getData()] . " exists and leads to node " . $node->children[$data_row[$node->getData()]]->getData());
+                $next_node = $node->children[$data_row[$node->getData()]];
 
                 return ($this->predict($next_node, $data_row));
             }
@@ -152,23 +124,22 @@ class ID3 extends Tree
     }
 
     /**
-     * @param $parent_node
+     * @param Node $parent_node
      * @param $branch_name
-     * @param $training_data
+     * @param array $training_data
      */
-    private function find_root($parent_node, $branch_name, $training_data)
+    private function find_root(Node $parent_node, $branch_name, $training_data)
     {
         $samples = $training_data['samples'];
         $header  = $training_data['header'];
 
-        $p = $this->possible_values($samples, 'value');
-        if (count($p) == 1) {
-            reset($p);
-            $parent_node->namedBranches[$branch_name] = new Node(strtoupper(key($p)));
+        $value_count = ArrayService::possible_values($samples, 'value');
+        if (count($value_count) === 1) {
+            $parent_node->children[$branch_name] = new Node(strtoupper(key($value_count)));
 
             return;
         }
-        $winning_attribute = 'none';
+        $winning_attribute = null;
         foreach (array_keys($header) as $h) {
             $g = $this->gain($samples, $h);
             if (empty($max_gain) || ($g > $max_gain)) {
@@ -176,15 +147,15 @@ class ID3 extends Tree
                 $winning_attribute = $h;
             }
         }
-        if ($parent_node->value != 'Root') {
-            $parent_node->namedBranches[$branch_name] = new Node($winning_attribute);
-            $parent_node                              = $parent_node->namedBranches[$branch_name];
+        if ($parent_node->getData() != 'Root') {
+            $parent_node->children[$branch_name] = new Node($winning_attribute);
+            $parent_node                         = $parent_node->children[$branch_name];
         } else {
-            $parent_node->value = $winning_attribute;
+            $parent_node->setData($winning_attribute);
         }
 
-        $p = $this->possible_values($samples, $winning_attribute);
-        foreach ($p as $value => $count) {
+        $value_count = ArrayService::possible_values($samples, $winning_attribute);
+        foreach ($value_count as $value => $count) {
             $subset = ArrayService::create_subset($training_data, $winning_attribute, $value);
             $this->find_root($parent_node, $value, $subset);
         }
@@ -202,10 +173,10 @@ class ID3 extends Tree
         $gain_reduction = 0.0;
         $total_count    = count($samples);
 
-        $possible_values_count = $this->possible_values($samples, $attr);
-        foreach ($possible_values_count as $k => $v) {
-            $e = $this->entropy($samples, $attr, $k);
-            $gain_reduction += $v * $e / $total_count;
+        $possible_values_count = ArrayService::possible_values($samples, $attr);
+        foreach ($possible_values_count as $value => $count) {
+            $e = $this->entropy($samples, $attr, $value);
+            $gain_reduction += $count * $e / $total_count;
         }
         $e   = $this->entropy($samples);
         $ret = $e - $gain_reduction;
@@ -266,21 +237,4 @@ class ID3 extends Tree
 
         return ($possibility);
     }
-
-    /**
-     * @param $samples
-     * @param $attr
-     * @return array
-     */
-    private function possible_values($samples, $attr)
-    {
-        $possible_values_count = [];
-        foreach ($samples as $sample) {
-            $possible_values_count[$sample[$attr]] = array_key_exists($sample[$attr],
-                $possible_values_count) ? $possible_values_count[$sample[$attr]] + 1 : 1;
-        }
-
-        return $possible_values_count;
-    }
-
 }
