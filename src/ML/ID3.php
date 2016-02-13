@@ -14,6 +14,16 @@ use Algorithms\Structure\MultipleTree;
 class ID3 extends MultipleTree
 {
     /**
+     * @var
+     */
+    private $base_key;
+
+    /**
+     * @var array
+     */
+    private $base_values;
+
+    /**
      * @param $input_data
      * @return null
      */
@@ -24,9 +34,12 @@ class ID3 extends MultipleTree
 
     /**
      * @param array $training_data
+     * @param       $base_key
      */
-    public function classify($training_data)
+    public function classify($training_data, $base_key)
     {
+        $this->base_key = $base_key;
+        $this->base_values = array_keys(ArrayService::count_values($training_data['samples'], $base_key));
         $this->split_node($this->root, '', $training_data);
     }
 
@@ -63,7 +76,7 @@ class ID3 extends MultipleTree
         $samples = $training_data['samples'];
         $header  = $training_data['header'];
 
-        $value_count = ArrayService::count_values($samples, 'value');
+        $value_count = ArrayService::count_values($samples, $this->base_key);
 
         if (count($value_count) === 1) {
             $node->children[$branch_name] = new MultipleTreeNode(strtoupper(key($value_count)));
@@ -127,8 +140,11 @@ class ID3 extends MultipleTree
     {
         $possibility = $this->calculate_possibility($samples, $attr, $value);
 
-        $ret = ($possibility['yes'] ? -$possibility['yes'] * log($possibility['yes'], 2) : 0)
-            - ($possibility['no'] ? $possibility['no'] * log($possibility['no'], 2) : 0);
+        $ret = 0;
+        $total_count = count($this->base_values);
+        foreach ($this->base_values as $value) {
+            $ret -= ($possibility[$value] ? $possibility[$value] * log($possibility[$value], $total_count) : 0);
+        }
 
         return $ret;
     }
@@ -142,28 +158,29 @@ class ID3 extends MultipleTree
      */
     private function calculate_possibility($samples, $attr, $attr_value)
     {
-        $possibility = ['no' => 0, 'yes' => 0];
-        try {
-            foreach ($samples as $sample) {
-                if ($attr === null) {
-                    $possibility[$sample['value']]++;
-                } else {
-                    if ($sample[$attr] == $attr_value) {
-                        $possibility[$sample['value']]++;
-                    }
+        $possibility = array_fill_keys($this->base_values, 0);
+
+        foreach ($samples as $sample) {
+            if ($attr === null) {
+                $possibility[$sample[$this->base_key]]++;
+            } else {
+                if ($sample[$attr] == $attr_value) {
+                    $possibility[$sample[$this->base_key]]++;
                 }
             }
+        }
 
-            $total = $possibility['yes'] + $possibility['no'];
+        $total = 0 ;
+        foreach ($this->base_values as $value) {
+            $total += $possibility[$value];
+        }
 
-            if ($total != 0) {
-                $possibility['yes'] /= $total;
-                $possibility['no'] /= $total;
-            } else {
-                throw new InvalidArgumentException();
+        if ($total != 0) {
+            foreach ($this->base_values as $value) {
+                $possibility[$value] /= $total;
             }
-        } catch (Exception $e) {
-            print_r($e->getMessage());
+        } else {
+            throw new InvalidArgumentException();
         }
 
         return ($possibility);
