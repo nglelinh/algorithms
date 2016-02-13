@@ -6,6 +6,10 @@ namespace Algorithms\Service;
  * Class ArrayService
  * @package Algorithms\Service
  */
+/**
+ * Class ArrayService
+ * @package Algorithms\Service
+ */
 class ArrayService
 {
     /**
@@ -61,7 +65,7 @@ class ArrayService
     public function list_combine($data)
     {
         $combinations = [];
-        $return = [];
+        $return       = [];
 
         // extracts a combination
         for ($i = 0; $i < count($data) - 1; $i++) {
@@ -73,8 +77,8 @@ class ArrayService
 
         // Eliminate duplication and long combinations
         $half_length = floor(count($data) / 2);
-        $flg    = count($data) % 2;
-        $max = max($data);
+        $flg         = count($data) % 2;
+        $max         = max($data);
 
         foreach ($combinations as $value) {
             if (count($value) <= $half_length) {
@@ -125,30 +129,44 @@ class ArrayService
         return $result;
     }
 
+    /**
+     * @param $data
+     * @param $target_attribute
+     * @param $value
+     * @return mixed
+     */
     public function create_subset($data, $target_attribute, $value)
     {
-        $header  = $data['header'];
-        $samples = $data['samples'];
+        $header      = $data['header'];
+        $samples     = $data['samples'];
+        $new_samples = [];
 
-        unset($header[$target_attribute]);
         foreach ($samples as $row) {
             if ($row[$target_attribute] == $value) {
                 unset($row[$target_attribute]);
                 $new_samples[] = $row;
             }
         }
+
+        unset($header[$target_attribute]);
         $new_data['header']  = $header;
         $new_data['samples'] = $new_samples;
 
         return ($new_data);
     }
 
-    public function possible_values($samples, $attribute)
+    /**
+     * @param $array
+     * @param $key
+     * @return array
+     */
+    public function count_values($array, $key)
     {
         $possible_values_count = [];
-        foreach ($samples as $sample) {
-            $possible_values_count[$sample[$attribute]] = array_key_exists($sample[$attribute],
-                $possible_values_count) ? $possible_values_count[$sample[$attribute]] + 1 : 1;
+
+        foreach ($array as $row) {
+            $possible_values_count[$row[$key]] = array_key_exists($row[$key],
+                $possible_values_count) ? $possible_values_count[$row[$key]] + 1 : 1;
         }
 
         return $possible_values_count;

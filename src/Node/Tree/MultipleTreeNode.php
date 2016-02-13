@@ -15,7 +15,7 @@ class MultipleTreeNode extends BaseNode
      * Node constructor.
      * @param $data
      */
-    public function __construct($data)
+    public function __construct($data = null)
     {
         $this->data     = $data;
         $this->children = [];

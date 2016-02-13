@@ -14,17 +14,11 @@ use Algorithms\Structure\MultipleTree;
 class ID3 extends MultipleTree
 {
     /**
-     * @var \Algorithms\Base\NodeInterface
-     */
-    private $training_data;
-
-    /**
      * ID3 constructor.
      */
-    public function __construct($training_data)
+    public function __construct()
     {
-        $this->training_data = $training_data;
-        parent::__construct(new MultipleTreeNode('Root'));
+        parent::__construct(new MultipleTreeNode());
     }
 
     /**
@@ -37,11 +31,11 @@ class ID3 extends MultipleTree
     }
 
     /**
-     *
+     * @param array $training_data
      */
-    public function classify()
+    public function classify($training_data)
     {
-        $this->split_node($this->root, 'Any', $this->training_data);
+        $this->split_node($this->root, 'Any', $training_data);
     }
 
     /**
@@ -77,7 +71,8 @@ class ID3 extends MultipleTree
         $samples = $training_data['samples'];
         $header  = $training_data['header'];
 
-        $value_count = ArrayService::possible_values($samples, 'value');
+        $value_count = ArrayService::count_values($samples, 'value');
+
         if (count($value_count) === 1) {
             $node->children[$branch_name] = new MultipleTreeNode(strtoupper(key($value_count)));
 
@@ -93,17 +88,17 @@ class ID3 extends MultipleTree
             }
         }
 
-        if ($node->getData() != 'Root') {
+        if ($node->getData() !== null) {
             $node->children[$branch_name] = new MultipleTreeNode($splitting_attribute);
             $node                         = $node->children[$branch_name];
         } else {
             $node->setData($splitting_attribute);
         }
 
-        $value_count = ArrayService::possible_values($samples, $splitting_attribute);
-        foreach ($value_count as $value => $count) {
-            $subset = ArrayService::create_subset($training_data, $splitting_attribute, $value);
-            $this->split_node($node, $value, $subset);
+        $value_count = ArrayService::count_values($samples, $splitting_attribute);
+        foreach ($value_count as $value_name => $count) {
+            $subset = ArrayService::create_subset($training_data, $splitting_attribute, $value_name);
+            $this->split_node($node, $value_name, $subset);
         }
 
         return;
@@ -119,7 +114,7 @@ class ID3 extends MultipleTree
         $gain_reduction = 0;
         $total_count    = count($samples);
 
-        $possible_values_count = ArrayService::possible_values($samples, $attr);
+        $possible_values_count = ArrayService::count_values($samples, $attr);
         foreach ($possible_values_count as $value => $count) {
             $e = $this->calculate_entropy($samples, $attr, $value);
             $gain_reduction += $count * $e / $total_count;

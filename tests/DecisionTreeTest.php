@@ -26,8 +26,8 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
         $training_data = $this->csv_to_array('sampling_travel_data.csv');
         array_pop($training_data['header']);
 
-        $dec_tree = new ID3($training_data);
-        $dec_tree->classify();
+        $dec_tree = new ID3();
+        $dec_tree->classify($training_data);
         echo "Decision tree using ID3:\n";
         $dec_tree->display();
         echo "Prediction on new data set\n";
