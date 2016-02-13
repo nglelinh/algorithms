@@ -14,14 +14,6 @@ use Algorithms\Structure\MultipleTree;
 class ID3 extends MultipleTree
 {
     /**
-     * ID3 constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct(new MultipleTreeNode());
-    }
-
-    /**
      * @param $input_data
      * @return null
      */
@@ -35,7 +27,7 @@ class ID3 extends MultipleTree
      */
     public function classify($training_data)
     {
-        $this->split_node($this->root, 'Any', $training_data);
+        $this->split_node($this->root, '', $training_data);
     }
 
     /**
