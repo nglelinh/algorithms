@@ -8,43 +8,26 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
 
     public function testCartPrognosis()
     {
-        $data   = [];
-        $data[] = ["base_key" => "base", "age" => "35", "gender" => "male", "grade" => "fail"];
-        $data[] = ["base_key" => "base", "age" => "12", "gender" => "female", "grade" => "fail"];
-        $data[] = ["base_key" => "base", "age" => "35", "gender" => "female", "grade" => "fail"];
-        $data[] = ["base_key" => "false", "age" => "26", "gender" => "male", "grade" => "fail"];
-        $data[] = ["base_key" => "base", "age" => "23", "gender" => "female", "grade" => "fail"];
-        $data[] = ["base_key" => "false", "age" => "31", "gender" => "male", "grade" => "medium"];
-        $data[] = ["base_key" => "base", "age" => "32", "gender" => "male", "grade" => "medium"];
-        $data[] = ["base_key" => "base", "age" => "23", "gender" => "male", "grade" => "medium"];
-        $data[] = ["base_key" => "false", "age" => "25", "gender" => "male", "grade" => "medium"];
-        $data[] = ["base_key" => "false", "age" => "29", "gender" => "female", "grade" => "medium"];
-        $data[] = ["base_key" => "base", "age" => "40", "gender" => "female", "grade" => "medium"];
-        $data[] = ["base_key" => "base", "age" => "12", "gender" => "female", "grade" => "medium"];
-        $data[] = ["base_key" => "base", "age" => "35", "gender" => "female", "grade" => "medium"];
-        $data[] = ["base_key" => "false", "age" => "34", "gender" => "male", "grade" => "good"];
-        $data[] = ["base_key" => "base", "age" => "23", "gender" => "female", "grade" => "good"];
-        $data[] = ["base_key" => "false", "age" => "31", "gender" => "male", "grade" => "good"];
-        $data[] = ["base_key" => "false", "age" => "32", "gender" => "male", "grade" => "good"];
-        $data[] = ["base_key" => "false", "age" => "23", "gender" => "male", "grade" => "best"];
-        $data[] = ["base_key" => "false", "age" => "25", "gender" => "male", "grade" => "best"];
-        $data[] = ["base_key" => "false", "age" => "29", "gender" => "female", "grade" => "best"];
-        $data[] = ["base_key" => "base", "age" => "40", "gender" => "female", "grade" => "best"];
+        $data   = $this->csv_to_array('sampling_student_data.csv');
+        $data   = $data['samples'];
 
         $dt = new DecisionTree($data);
-        $dt->classify('base_key', 'base', 'false');
+        $dt->classify('graduate', 'true', 'false');
 
         $target = ["age" => "40", "gender" => "male", "grade" => "best"];
         self::assertEquals('false', $dt->predict($target));
 
         $target = ["age" => "40", "gender" => "male", "grade" => "fail"];
-        self::assertEquals('base', $dt->predict($target));
+        self::assertEquals('true', $dt->predict($target));
     }
 
     public function testID3()
     {
-        $dec_tree = new ID3();
-        $dec_tree->classify($this->csv_to_array('sampling_travel_data.csv'));
+        $training_data = $this->csv_to_array('sampling_travel_data.csv');
+        array_pop($training_data['header']);
+
+        $dec_tree = new ID3($training_data);
+        $dec_tree->classify();
         echo "Decision tree using ID3:\n";
         $dec_tree->display();
         echo "Prediction on new data set\n";

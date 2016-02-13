@@ -2,67 +2,16 @@
 
 namespace Algorithms\ML;
 
-use Algorithms\Base\BaseNode;
-use Algorithms\Base\BaseTree;
 use Algorithms\Linear\InvalidArgumentException;
+use Algorithms\Node\Tree\MultipleTreeNode;
 use Algorithms\Service\ArrayService;
-
-/**
- * Class Tree
- * @package Algorithms\ML
- */
-class Tree extends BaseTree
-{
-    public function display()
-    {
-        $this->root->display(0);
-    }
-}
-
-/**
- * Class Node
- * @package Algorithms\ML
- */
-class Node extends BaseNode
-{
-    /**
-     * @var array
-     */
-    public $children;
-
-    /**
-     * Node constructor.
-     * @param $data
-     */
-    public function __construct($data)
-    {
-        $this->data     = $data;
-        $this->children = [];
-    }
-
-    /**
-     * @param $level
-     */
-    public function display($level)
-    {
-        echo $this->getData() . "\n";
-        /**
-         * @var  Node $child_node
-         */
-        foreach ($this->children as $name => $child_node) {
-            echo str_repeat(" ", ($level + 1) * 4) . str_repeat("-",
-                    14 / 2 - strlen($name) / 2) . $name . str_repeat("-",
-                    14 / 2 - strlen($name) / 2) . ">";
-            $child_node->display($level + 1);
-        }
-    }
-}
+use Algorithms\Structure\MultipleTree;
 
 /**
  * Class ID3
  * @package Algorithms\ML
  */
-class ID3 extends Tree
+class ID3 extends MultipleTree
 {
     /**
      * @var \Algorithms\Base\NodeInterface
@@ -72,9 +21,10 @@ class ID3 extends Tree
     /**
      * ID3 constructor.
      */
-    public function __construct()
+    public function __construct($training_data)
     {
-        parent::__construct(new Node('Root'));
+        $this->training_data = $training_data;
+        parent::__construct(new MultipleTreeNode('Root'));
     }
 
     /**
@@ -87,21 +37,19 @@ class ID3 extends Tree
     }
 
     /**
-     * @param \Algorithms\Base\NodeInterface $training_data
+     *
      */
-    public function classify($training_data)
+    public function classify()
     {
-        $this->training_data = $training_data;
-        array_pop($this->training_data['header']);
         $this->split_node($this->root, 'Any', $this->training_data);
     }
 
     /**
-     * @param Node $node
+     * @param MultipleTreeNode $node
      * @param      $data_row
      * @return null
      */
-    private function predict_node(Node $node, $data_row)
+    private function predict_node(MultipleTreeNode $node, $data_row)
     {
         //we have reached a leaf node
         if (!count($node->children)) {
@@ -120,18 +68,18 @@ class ID3 extends Tree
     }
 
     /**
-     * @param Node  $node
+     * @param MultipleTreeNode  $node
      * @param       $branch_name
      * @param array $training_data
      */
-    private function split_node(Node $node, $branch_name, $training_data)
+    private function split_node(MultipleTreeNode $node, $branch_name, $training_data)
     {
         $samples = $training_data['samples'];
         $header  = $training_data['header'];
 
         $value_count = ArrayService::possible_values($samples, 'value');
         if (count($value_count) === 1) {
-            $node->children[$branch_name] = new Node(strtoupper(key($value_count)));
+            $node->children[$branch_name] = new MultipleTreeNode(strtoupper(key($value_count)));
 
             return;
         }
@@ -146,7 +94,7 @@ class ID3 extends Tree
         }
 
         if ($node->getData() != 'Root') {
-            $node->children[$branch_name] = new Node($splitting_attribute);
+            $node->children[$branch_name] = new MultipleTreeNode($splitting_attribute);
             $node                         = $node->children[$branch_name];
         } else {
             $node->setData($splitting_attribute);
@@ -168,7 +116,7 @@ class ID3 extends Tree
      */
     private function get_information_gain($samples, $attr)
     {
-        $gain_reduction = 0.0;
+        $gain_reduction = 0;
         $total_count    = count($samples);
 
         $possible_values_count = ArrayService::possible_values($samples, $attr);
