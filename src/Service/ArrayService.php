@@ -124,4 +124,22 @@ class ArrayService
 
         return $result;
     }
+
+    public function create_subset($data, $target_attribute, $value)
+    {
+        $header  = $data['header'];
+        $samples = $data['samples'];
+
+        unset($header[$target_attribute]);
+        foreach ($samples as $si) {
+            if ($si[$target_attribute] == $value) {
+                unset($si[$target_attribute]);
+                $new_samples[] = $si;
+            }
+        }
+        $new_data['header']  = $header;
+        $new_data['samples'] = $new_samples;
+
+        return ($new_data);
+    }
 }
