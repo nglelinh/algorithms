@@ -23,7 +23,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
 
     public function testID3()
     {
-        $training_data = $this->csv_to_array('sampling_travel_data.csv');
+        $training_data = $this->csv_to_array('sampling_weather_data.csv');
         array_pop($training_data['header']);
 
         $dec_tree = new ID3();
@@ -32,7 +32,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
         $dec_tree->display();
         echo "Prediction on new data set\n";
 
-        $input_data = $this->csv_to_array('testing_travel_data.csv');
+        $input_data = $this->csv_to_array('testing_weather_data.csv');
         $data = $input_data['samples'];
         foreach ($data as $k => $row) {
             self::assertEquals(strtoupper($row['value']), $dec_tree->predict($row));
