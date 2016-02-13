@@ -131,10 +131,10 @@ class ArrayService
         $samples = $data['samples'];
 
         unset($header[$target_attribute]);
-        foreach ($samples as $si) {
-            if ($si[$target_attribute] == $value) {
-                unset($si[$target_attribute]);
-                $new_samples[] = $si;
+        foreach ($samples as $row) {
+            if ($row[$target_attribute] == $value) {
+                unset($row[$target_attribute]);
+                $new_samples[] = $row;
             }
         }
         $new_data['header']  = $header;

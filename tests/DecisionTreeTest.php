@@ -35,20 +35,25 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
         $dt->classify('base_key', 'base', 'false');
 
         $target = ["age" => "40", "gender" => "male", "grade" => "best"];
-        self::assertEquals('false', $dt->prognosis($target));
+        self::assertEquals('false', $dt->predict($target));
 
         $target = ["age" => "40", "gender" => "male", "grade" => "fail"];
-        self::assertEquals('base', $dt->prognosis($target));
+        self::assertEquals('base', $dt->predict($target));
     }
 
     public function testID3()
     {
         $dec_tree = new ID3();
-        $dec_tree->setTrainingData($this->csv_to_array('sampling_travel_data.csv'));
+        $dec_tree->classify($this->csv_to_array('sampling_travel_data.csv'));
         echo "Decision tree using ID3:\n";
         $dec_tree->display();
         echo "Prediction on new data set\n";
-        $dec_tree->predict_outcome($this->csv_to_array('input_travel_data.csv'));
+
+        $input_data = $this->csv_to_array('testing_travel_data.csv');
+        $data = $input_data['samples'];
+        foreach ($data as $k => $row) {
+            self::assertEquals(strtoupper($row['value']), $dec_tree->predict($row));
+        }
     }
 
     private function csv_to_array($filename = '', $delimiter = ',')

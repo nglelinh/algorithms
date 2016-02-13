@@ -46,8 +46,12 @@ class Node extends BaseNode
     public function display($level)
     {
         echo $this->getData() . "\n";
+        /**
+         * @var  Node $child_node
+         */
         foreach ($this->children as $name => $child_node) {
-            echo str_repeat(" ", ($level + 1) * 4) . str_repeat("-", 14 / 2 - strlen($name) / 2) . $name . str_repeat("-",
+            echo str_repeat(" ", ($level + 1) * 4) . str_repeat("-",
+                    14 / 2 - strlen($name) / 2) . $name . str_repeat("-",
                     14 / 2 - strlen($name) / 2) . ">";
             $child_node->display($level + 1);
         }
@@ -75,89 +79,83 @@ class ID3 extends Tree
 
     /**
      * @param $input_data
+     * @return null
      */
-    public function predict_outcome($input_data)
+    public function predict($input_data)
     {
-        $data = $input_data['samples'];
-        foreach ($data as $k => $row) {
-            $row['result'] = $this->predict($this->root, $row);
-            $data[$k]      = $row;
-            echo "\n======";
-        }
+        return $this->predict_node($this->root, $input_data);
     }
 
     /**
      * @param \Algorithms\Base\NodeInterface $training_data
      */
-    public function setTrainingData($training_data)
+    public function classify($training_data)
     {
         $this->training_data = $training_data;
         array_pop($this->training_data['header']);
-        $this->find_root($this->root, 'Any', $this->training_data);
+        $this->split_node($this->root, 'Any', $this->training_data);
     }
 
     /**
      * @param Node $node
-     * @param $data_row
+     * @param      $data_row
      * @return null
      */
-    private function predict(Node $node, $data_row)
+    private function predict_node(Node $node, $data_row)
     {
         //we have reached a leaf node
         if (!count($node->children)) {
-            print_r("\nReturning " . $node->getData());
-
             return $node->getData();
         }
+
         if (array_key_exists($node->getData(), $data_row)) {
-            print_r("\nValue of " . $node->getData() . " is " . $data_row[$node->getData()]);
             if (array_key_exists($data_row[$node->getData()], $node->children)) {
-                print_r("\nBranch " . $data_row[$node->getData()] . " exists and leads to node " . $node->children[$data_row[$node->getData()]]->getData());
                 $next_node = $node->children[$data_row[$node->getData()]];
 
-                return ($this->predict($next_node, $data_row));
+                return ($this->predict_node($next_node, $data_row));
             }
         }
-        print_r("\nInvalid path");
 
         return null;
     }
 
     /**
-     * @param Node $parent_node
-     * @param $branch_name
+     * @param Node  $node
+     * @param       $branch_name
      * @param array $training_data
      */
-    private function find_root(Node $parent_node, $branch_name, $training_data)
+    private function split_node(Node $node, $branch_name, $training_data)
     {
         $samples = $training_data['samples'];
         $header  = $training_data['header'];
 
         $value_count = ArrayService::possible_values($samples, 'value');
         if (count($value_count) === 1) {
-            $parent_node->children[$branch_name] = new Node(strtoupper(key($value_count)));
+            $node->children[$branch_name] = new Node(strtoupper(key($value_count)));
 
             return;
         }
-        $winning_attribute = null;
+
+        $splitting_attribute = $max_gain = null;
         foreach (array_keys($header) as $h) {
-            $g = $this->gain($samples, $h);
-            if (empty($max_gain) || ($g > $max_gain)) {
-                $max_gain          = $g;
-                $winning_attribute = $h;
+            $g = $this->get_information_gain($samples, $h);
+            if ($max_gain === null || ($g > $max_gain)) {
+                $max_gain            = $g;
+                $splitting_attribute = $h;
             }
         }
-        if ($parent_node->getData() != 'Root') {
-            $parent_node->children[$branch_name] = new Node($winning_attribute);
-            $parent_node                         = $parent_node->children[$branch_name];
+
+        if ($node->getData() != 'Root') {
+            $node->children[$branch_name] = new Node($splitting_attribute);
+            $node                         = $node->children[$branch_name];
         } else {
-            $parent_node->setData($winning_attribute);
+            $node->setData($splitting_attribute);
         }
 
-        $value_count = ArrayService::possible_values($samples, $winning_attribute);
+        $value_count = ArrayService::possible_values($samples, $splitting_attribute);
         foreach ($value_count as $value => $count) {
-            $subset = ArrayService::create_subset($training_data, $winning_attribute, $value);
-            $this->find_root($parent_node, $value, $subset);
+            $subset = ArrayService::create_subset($training_data, $splitting_attribute, $value);
+            $this->split_node($node, $value, $subset);
         }
 
         return;
@@ -168,17 +166,17 @@ class ID3 extends Tree
      * @param $attr
      * @return int
      */
-    private function gain($samples, $attr)
+    private function get_information_gain($samples, $attr)
     {
         $gain_reduction = 0.0;
         $total_count    = count($samples);
 
         $possible_values_count = ArrayService::possible_values($samples, $attr);
         foreach ($possible_values_count as $value => $count) {
-            $e = $this->entropy($samples, $attr, $value);
+            $e = $this->calculate_entropy($samples, $attr, $value);
             $gain_reduction += $count * $e / $total_count;
         }
-        $e   = $this->entropy($samples);
+        $e   = $this->calculate_entropy($samples);
         $ret = $e - $gain_reduction;
 
         return $ret;
@@ -190,14 +188,12 @@ class ID3 extends Tree
      * @param null $value
      * @return int
      */
-    private function entropy($samples, $attr = null, $value = null)
+    private function calculate_entropy($samples, $attr = null, $value = null)
     {
-        if ($attr != null) {
-            $possibility = $this->calculate_p($samples, $attr, $value);
-        } else {
-            $possibility = $this->calculate_p($samples, null, null);
-        }
-        $ret = ($possibility['yes'] ? -$possibility['yes'] * log($possibility['yes'], 2) : 0) - ($possibility['no'] ? $possibility['no'] * log($possibility['no'], 2) : 0);
+        $possibility = $this->calculate_possibility($samples, $attr, $value);
+
+        $ret = ($possibility['yes'] ? -$possibility['yes'] * log($possibility['yes'], 2) : 0)
+            - ($possibility['no'] ? $possibility['no'] * log($possibility['no'], 2) : 0);
 
         return $ret;
     }
@@ -209,12 +205,12 @@ class ID3 extends Tree
      * @return array
      * @throws InvalidArgumentException
      */
-    private function calculate_p($samples, $attr, $attr_value)
+    private function calculate_possibility($samples, $attr, $attr_value)
     {
         $possibility = ['no' => 0, 'yes' => 0];
         try {
             foreach ($samples as $sample) {
-                if ($attr == null) {
+                if ($attr === null) {
                     $possibility[$sample['value']]++;
                 } else {
                     if ($sample[$attr] == $attr_value) {

@@ -19,5 +19,5 @@ interface DecisionTreeInterface {
      * @param $target
      * @return mixed
      */
-    public function prognosis($target);
+    public function predict($target);
 }
