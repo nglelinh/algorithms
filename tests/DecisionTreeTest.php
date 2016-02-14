@@ -1,24 +1,25 @@
 <?php
 
+use Algorithms\ML\CART;
 use Algorithms\ML\DecisionTree;
 use Algorithms\ML\ID3;
 
 class DecisionTreeTest extends PHPUnit_Framework_TestCase
 {
 
-    public function testCartPrognosis()
+    public function testCart()
     {
         $data   = $this->csv_to_array('sampling_student_data.csv');
         $data   = $data['samples'];
 
-        $dt = new DecisionTree($data);
+        $dt = new CART($data);
         $dt->classify('graduate', 'true', 'false');
 
-        $target = ["age" => "40", "gender" => "male", "grade" => "best"];
-        self::assertEquals('false', $dt->predict($target));
-
-        $target = ["age" => "40", "gender" => "male", "grade" => "fail"];
-        self::assertEquals('true', $dt->predict($target));
+        $input_data = $this->csv_to_array('testing_student_data.csv');
+        $data = $input_data['samples'];
+        foreach ($data as $k => $row) {
+            self::assertEquals($row['graduate'], $dt->predict($row));
+        }
     }
 
     public function testID3()

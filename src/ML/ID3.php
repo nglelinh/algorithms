@@ -24,12 +24,12 @@ class ID3 extends MultipleTree
     private $base_values;
 
     /**
-     * @param $input_data
+     * @param $target
      * @return null
      */
-    public function predict($input_data)
+    public function predict($target)
     {
-        return $this->predict_node($this->root, $input_data);
+        return $this->predict_node($this->root, $target);
     }
 
     /**
@@ -45,21 +45,21 @@ class ID3 extends MultipleTree
 
     /**
      * @param MultipleTreeNode $node
-     * @param      $data_row
+     * @param      $target
      * @return null
      */
-    private function predict_node(MultipleTreeNode $node, $data_row)
+    private function predict_node(MultipleTreeNode $node, $target)
     {
         //we have reached a leaf node
         if (!count($node->children)) {
             return $node->getData();
         }
 
-        if (array_key_exists($node->getData(), $data_row)) {
-            if (array_key_exists($data_row[$node->getData()], $node->children)) {
-                $next_node = $node->children[$data_row[$node->getData()]];
+        if (array_key_exists($node->getData(), $target)) {
+            if (array_key_exists($target[$node->getData()], $node->children)) {
+                $next_node = $node->children[$target[$node->getData()]];
 
-                return ($this->predict_node($next_node, $data_row));
+                return ($this->predict_node($next_node, $target));
             }
         }
 
