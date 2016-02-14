@@ -6,23 +6,48 @@ use Algorithms\ML\ID3;
 
 class DecisionTreeTest extends PHPUnit_Framework_TestCase
 {
-
-    public function testCart()
+    public function cartProvider()
     {
-        $data   = $this->csv_to_array('sampling_student_data.csv');
-        $data   = $data['samples'];
+        $input_data = $this->csv_to_array('testing_student_data.csv');
+
+        $return = [];
+        foreach ($input_data['samples'] as $row) {
+            $return[] = [$row];
+        }
+
+        return $return;
+    }
+
+    /**
+     * @dataProvider cartProvider
+     * @param $row
+     */
+    public function testCart($row)
+    {
+        $data = $this->csv_to_array('sampling_student_data.csv');
+        $data = $data['samples'];
 
         $dt = new CART($data);
         $dt->classify('graduate', 'true', 'false');
-
-        $input_data = $this->csv_to_array('testing_student_data.csv');
-        $data = $input_data['samples'];
-        foreach ($data as $k => $row) {
-            self::assertEquals($row['graduate'], $dt->predict($row));
-        }
+        self::assertEquals($row['graduate'], $dt->predict($row));
     }
 
-    public function testID3()
+    public function id3Provider()
+    {
+        $input_data = $this->csv_to_array('testing_weather_data.csv');
+        $data       = $input_data['samples'];
+        $return = [];
+        foreach ($data as $k => $row) {
+            $return[] = [$row];
+        }
+        return $return;
+    }
+
+    /**
+     * @dataProvider id3Provider
+     * @param $row
+     */
+    public function testID3($row)
     {
         $training_data = $this->csv_to_array('sampling_weather_data.csv');
         array_pop($training_data['header']);
@@ -33,11 +58,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
         $dec_tree->display();
         echo "Prediction on new data set\n";
 
-        $input_data = $this->csv_to_array('testing_weather_data.csv');
-        $data = $input_data['samples'];
-        foreach ($data as $k => $row) {
-            self::assertEquals(strtoupper($row['value']), $dec_tree->predict($row));
-        }
+        self::assertEquals(strtoupper($row['value']), $dec_tree->predict($row));
     }
 
     private function csv_to_array($filename = '', $delimiter = ',')

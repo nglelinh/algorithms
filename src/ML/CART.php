@@ -13,10 +13,6 @@ use Algorithms\Linear\InvalidArgumentException;
 class CART extends BaseTree implements DecisionTreeInterface
 {
     /**
-     * @var
-     */
-    private $binary_variable_data;
-    /**
      * @var array
      */
     private $data;
@@ -54,9 +50,10 @@ class CART extends BaseTree implements DecisionTreeInterface
         $this->base_value  = $base_value;
         $this->false_value = $false_value;
 
-        $this->binary_variable_data = $this->make_binary_variable_data($this->data, $base_key);
+        $binary_variable_data = $this->make_binary_variable_data($this->data, $base_key);
 
-        $tree = $this->make_decision_tree($this->binary_variable_data,
+        $tree = $this->make_decision_tree(
+            $binary_variable_data,
             $this->base_key,
             $this->base_value,
             $this->base_key,
@@ -100,7 +97,7 @@ class CART extends BaseTree implements DecisionTreeInterface
         $right_value = $node->getRight()->getData()->split_value;
 
         // To determine whether a continuous variable
-        $values = ArrayService::get_sub_array_by_key($this->data, $split_key);
+        $values = ArrayService::get_values_by_key($this->data, $split_key);
         if (count($values) > 3 && is_numeric($values[0])) {
             if (strstr('<=x', $left_value) !== false) {
                 $flg    = 1;
@@ -153,7 +150,7 @@ class CART extends BaseTree implements DecisionTreeInterface
             }
 
             // Determined "continuous variables" of the "multi-variable"
-            $values = ArrayService::get_sub_array_by_key($data, $key);
+            $values = ArrayService::get_values_by_key($data, $key);
             if (count($values) >= 3) {
                 if (is_numeric($values[0])) {
                     $continuous_param[] = $key;
@@ -176,20 +173,20 @@ class CART extends BaseTree implements DecisionTreeInterface
     /**
      * @param $data
      * @param $base_key
-     * @param $pred
+     * @param $attribute
      * @return array
      */
-    private function continuous_to_binary($data, $base_key, $pred)
+    private function continuous_to_binary($data, $base_key, $attribute)
     {
-        $values = ArrayService::get_sub_array_by_key($data, $pred);
+        $values = ArrayService::get_values_by_key($data, $attribute);
 
         asort($values);
         $combinations = [];
 
         for ($i = 1; $i <= count($values); $i++) {
             $combinations[$i]  = array_slice($values, 0, $i);
-            $result          = $this->to_binary_data($data, $pred, $combinations[$i], 'type1', 'type2');
-            $delta_I_array[$i] = $this->calc_delta_I($result, $base_key, $pred);
+            $result            = $this->to_binary_data($data, $attribute, $combinations[$i], 'type1', 'type2');
+            $delta_I_array[$i] = $this->calc_delta_I($result, $base_key, $attribute);
         }
 
         $max_keys = array_keys($delta_I_array, max($delta_I_array));
@@ -202,13 +199,13 @@ class CART extends BaseTree implements DecisionTreeInterface
 
         $result = [];
         foreach ($data as $num => $array) {
-            $chk = $array[$pred];
+            $chk = $array[$attribute];
 
             $tmp_array = $array;
             if (in_array($chk, $combinations[$max_key])) {
-                $tmp_array[$pred] = $type1_name;
+                $tmp_array[$attribute] = $type1_name;
             } else {
-                $tmp_array[$pred] = $type2_name;
+                $tmp_array[$attribute] = $type2_name;
             }
             $result[$num] = $tmp_array;
         }
@@ -219,19 +216,19 @@ class CART extends BaseTree implements DecisionTreeInterface
     /**
      * @param $data
      * @param $base
-     * @param $param_name
+     * @param $attribute_name
      * @return array
      */
-    private function multiple_to_binary($data, $base, $param_name)
+    private function multiple_to_binary($data, $base, $attribute_name)
     {
-        $values = ArrayService::get_sub_array_by_key($data, $param_name);
+        $values = ArrayService::get_values_by_key($data, $attribute_name);
 
         $combinations  = ArrayService::list_combine($values);
         $delta_I_array = [];
 
         foreach ($combinations as $combination) {
-            $binary_data     = $this->to_binary_data($data, $param_name, $combination, 'type1', 'type2');
-            $delta_I_array[] = $this->calc_delta_I($binary_data, $base, $param_name);
+            $binary_data     = $this->to_binary_data($data, $attribute_name, $combination, 'type1', 'type2');
+            $delta_I_array[] = $this->calc_delta_I($binary_data, $base, $attribute_name);
         }
 
         $max_key = array_search(max($delta_I_array), $delta_I_array);
@@ -246,30 +243,31 @@ class CART extends BaseTree implements DecisionTreeInterface
             }
         }
 
-        $binary_data = $this->to_binary_data($data, $param_name, $combinations[$max_key], $type1_name, $type2_name);
+        $binary_data = $this->to_binary_data($data, $attribute_name, $combinations[$max_key], $type1_name, $type2_name);
 
         return $binary_data;
     }
 
     /**
      * @param array $data
-     * @param       $pred
-     * @param       $comb
+     * @param       $attribute
+     * @param       $combination
      * @param       $name1
      * @param       $name2
      * @return array
      */
-    private function to_binary_data($data, $pred, $comb, $name1, $name2)
+    private function to_binary_data($data, $attribute, $combination, $name1, $name2)
     {
         $tmp_data = [];
 
         foreach ($data as $num => $array) {
-            $chk       = $array[$pred];
+            $value       = $array[$attribute];
+
             $tmp_array = $array;
-            if (in_array($chk, $comb)) {
-                $tmp_array[$pred] = $name1;
+            if (in_array($value, $combination)) {
+                $tmp_array[$attribute] = $name1;
             } else {
-                $tmp_array[$pred] = $name2;
+                $tmp_array[$attribute] = $name2;
             }
             $tmp_data[$num] = $tmp_array;
         }
@@ -279,25 +277,25 @@ class CART extends BaseTree implements DecisionTreeInterface
 
     /**
      * @param $data
-     * @param $base
-     * @param $pred
+     * @param $base_key
+     * @param $attribute
      * @return float|int|number
      */
-    public function calc_delta_I($data, $base, $pred)
+    public function calc_delta_I($data, $base_key, $attribute)
     {
         $gini_array = [];
 
-        $split_array = ArrayService::split_by_key($data, $pred);
+        $split_array = ArrayService::split_by_key($data, $attribute);
 
         foreach ($split_array as $key => $value) {
-            $gini_array[$key] = self::calc_gini_index($value, $base);
+            $gini_array[$key] = self::calc_gini_index($value, $base_key);
         }
-        $gini_root = self::calc_gini_index($data, $base);
+        $gini_root = self::calc_gini_index($data, $base_key);
 
         $delta_I = $gini_root;
 
         foreach ($split_array as $key => $value) {
-            $odd  = self::probability_calculation($data, $pred, $key);
+            $odd  = self::probability_calculation($data, $attribute, $key);
             $gini = $gini_array[$key];
             $delta_I -= $odd * $gini;
         }
@@ -308,19 +306,19 @@ class CART extends BaseTree implements DecisionTreeInterface
     /**
      * measure of inequality
      * @param $data
-     * @param $base
+     * @param $base_key
      * @return int|number
      */
-    public function calc_gini_index($data, $base)
+    public function calc_gini_index($data, $base_key)
     {
         $odds = [];
 
         // Extract the number of individuals each value of the predictor variables
-        $feat_array = ArrayService::get_sub_array_by_key($data, $base);
+        $values_by_key = ArrayService::get_values_by_key($data, $base_key);
 
         // Calculate the probability of occurrence of each value of the predictor variables
-        foreach ($feat_array as $value) {
-            $odds[] = self::probability_calculation($data, $base, $value);
+        foreach ($values_by_key as $value) {
+            $odds[] = self::probability_calculation($data, $base_key, $value);
         }
 
         $gini = 1;
@@ -400,7 +398,6 @@ class CART extends BaseTree implements DecisionTreeInterface
             } else {
                 $decisionTreeNode->setRight(self::make_decision_tree($value, $base, $base_value, $split_key, $key));
             }
-
             $i++;
         }
 
@@ -409,26 +406,22 @@ class CART extends BaseTree implements DecisionTreeInterface
 
     /**
      * @param $data
-     * @param $base
-     * @param $value
+     * @param $base_key
+     * @param $base_value
      * @param $split_key
      * @param $split_value
      * @return DecisionTreeData
      */
-    private function makeDecisionTreeData($data, $base, $value, $split_key, $split_value)
+    private function makeDecisionTreeData($data, $base_key, $base_value, $split_key, $split_value)
     {
         $decisionTreeData              = new DecisionTreeData();
         $decisionTreeData->number      = count($data);
         $decisionTreeData->split_key   = $split_key;
         $decisionTreeData->split_value = $split_value;
 
-        $split_array = ArrayService::split_by_key($data, $base);
+        $split_array = ArrayService::split_by_key($data, $base_key);
 
-        if (isset($split_array[$value])) {
-            $decisionTreeData->match = count($split_array[$value]);
-        } else {
-            $decisionTreeData->match = 0;
-        }
+        $decisionTreeData->match   = isset($split_array[$base_value]) ? count($split_array[$base_value]) : 0;
         $decisionTreeData->unmatch = $decisionTreeData->number - $decisionTreeData->match;
 
         return $decisionTreeData;

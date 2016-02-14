@@ -18,7 +18,7 @@ class ArrayService
      * @return array
      * returns a value that is included in the $key variable
      */
-    public function get_sub_array_by_key($data, $key)
+    public function get_values_by_key($data, $key)
     {
         $values = [];
         foreach ($data as $value) {
@@ -41,10 +41,9 @@ class ArrayService
         }
 
         $split_array = [];
-        $feat_array  = self::get_sub_array_by_key($data, $key);
+        $values  = self::get_values_by_key($data, $key);
 
-        // Calculate the probability of occurrence of each value of the predictor variables
-        foreach ($feat_array as $value) {
+        foreach ($values as $value) {
             $sub_array = [];
 
             foreach ($data as $item) {
