@@ -52,12 +52,12 @@ class MatrixOperator implements MatrixOperatorInterface
      * @param MatrixInterface $m1
      * @param MatrixInterface $m2
      * @return MatrixInterface
-     * @throws InvalidArgumentLinearException
+     * @throws InvalidArgumentException
      */
     public function multiply(MatrixInterface $m1, MatrixInterface $m2)
     {
         if ($m1->columns() !== $m2->rows()) {
-            throw new InvalidArgumentLinearException();
+            throw new InvalidArgumentException();
         }
 
         $result = [];

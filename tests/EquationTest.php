@@ -7,7 +7,8 @@ use Algorithms\Linear\MatrixOperator;
 /**
  * Class EquationTest
  */
-class EquationTest extends PHPUnit_Framework_TestCase {
+class EquationTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @var EquationInterface
@@ -22,17 +23,18 @@ class EquationTest extends PHPUnit_Framework_TestCase {
         parent::setUp();
         $this->equation = new Equation(
             new Matrix(
-                array(
-                    array(1, 0, 0),
-                    array(0, 2, 0),
-                    array(0, 0, 3)
-                )
+                [
+                    [1, 0, 0],
+                    [0, 2, 0],
+                    [0, 0, 3]
+                ]
             ),
             new Matrix(
-                array(
-                    array(1),
-                    array(2),
-                    array(3))
+                [
+                    [1],
+                    [2],
+                    [3]
+                ]
             )
         );
     }
@@ -41,12 +43,36 @@ class EquationTest extends PHPUnit_Framework_TestCase {
     {
         $solver = new InverseEquationSolver(new MatrixOperator());
         self::assertEquals(
-            array(
-                array(1),
-                array(1),
-                array(1)
-            ),
+            [
+                [1],
+                [1],
+                [1]
+            ],
             $solver->solve($this->equation)->toArray()
-            );
+        );
+    }
+
+    public function testIsRoot()
+    {
+        $solver = new InverseEquationSolver(new MatrixOperator());
+        self::assertTrue(
+            $solver->isRoot($this->equation, new Matrix([
+                [1],
+                [1],
+                [1]
+            ]))
+        );
+    }
+
+    public function testNotIsRoot()
+    {
+        $solver = new InverseEquationSolver(new MatrixOperator());
+        self::assertFalse(
+            $solver->isRoot($this->equation, new Matrix([
+                [1],
+                [2],
+                [1]
+            ]))
+        );
     }
 }

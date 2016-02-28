@@ -2,21 +2,7 @@
 
 namespace Algorithms\Linear;
 
-class InverseEquationSolver implements EquationSolverInterface {
-    /**
-     * @var MatrixOperatorInterface
-     */
-    private $operator;
-
-    /**
-     * InverseEquationSolver constructor.
-     * @param MatrixOperatorInterface $operator
-     */
-    public function __construct(MatrixOperatorInterface $operator)
-    {
-        $this->operator = $operator;
-    }
-
+class InverseEquationSolver extends EquationSolver {
     /**
      * @param EquationInterface $equation
      * @return MatrixInterface

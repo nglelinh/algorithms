@@ -2,7 +2,7 @@
 
 namespace Algorithms\Linear;
 
-class LupEquationSolver implements EquationSolverInterface {
+class LupEquationSolver extends EquationSolver {
 
     /**
      * @param EquationInterface $equation

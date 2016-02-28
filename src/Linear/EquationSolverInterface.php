@@ -14,4 +14,11 @@ interface EquationSolverInterface
      * @return MatrixInterface
      */
     public function solve(EquationInterface $equation);
+
+    /**
+     * @param EquationInterface $equation
+     * @param MatrixInterface   $check
+     * @return bool
+     */
+    public function isRoot(EquationInterface $equation, MatrixInterface $check);
 }
