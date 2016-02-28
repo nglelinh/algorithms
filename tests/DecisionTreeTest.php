@@ -8,7 +8,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
 {
     public function cartProvider()
     {
-        $input_data = $this->csv_to_array('testing_student_data.csv');
+        $input_data = $this->csv_to_array('../data/testing_student_data.csv');
 
         $return = [];
         foreach ($input_data['samples'] as $row) {
@@ -24,7 +24,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
      */
     public function testCart($row)
     {
-        $data = $this->csv_to_array('sampling_student_data.csv');
+        $data = $this->csv_to_array('../data/sampling_student_data.csv');
         $data = $data['samples'];
 
         $dt = new CART($data);
@@ -34,7 +34,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
 
     public function id3Provider()
     {
-        $input_data = $this->csv_to_array('testing_weather_data.csv');
+        $input_data = $this->csv_to_array('../data/testing_weather_data.csv');
         $data       = $input_data['samples'];
         $return = [];
         foreach ($data as $k => $row) {
@@ -49,7 +49,7 @@ class DecisionTreeTest extends PHPUnit_Framework_TestCase
      */
     public function testID3($row)
     {
-        $training_data = $this->csv_to_array('sampling_weather_data.csv');
+        $training_data = $this->csv_to_array('../data/sampling_weather_data.csv');
         array_pop($training_data['header']);
 
         $dec_tree = new ID3();
