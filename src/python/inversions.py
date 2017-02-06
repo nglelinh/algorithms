@@ -15,6 +15,8 @@ def sort_and_count_inversions(numbers):
     right, right_count = sort_and_count_inversions(numbers[int(len(numbers) / 2):])
     merged, split_count = merge_split(left, right)
 
+    print(left, right)
+
     return merged, left_count + right_count + split_count
 
 
@@ -44,14 +46,23 @@ def merge_split(left, right):
     return sorted_list, inversions
 
 
-merged_list, count = merge_split([2, 3, 5, 8], [1, 4, 6])
+# merged_list, count = merge_split([2, 3, 5, 8], [1, 4, 6])
+#
+# print(merged_list)
+#
+# print(count)
+#
+# merged_list, count = sort_and_count_inversions(input_numbers)
+#
+# print(input_numbers[:10])
+#
+# print(count)
+
+
+inputs = [5, 3, 8, 9, 1, 7, 0, 2, 6, 4]
+
+merged_list, count = sort_and_count_inversions(inputs)
 
 print(merged_list)
-
-print(count)
-
-merged_list, count = sort_and_count_inversions(input_numbers)
-
-print(input_numbers[:10])
 
 print(count)

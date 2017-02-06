@@ -28,8 +28,7 @@ def choose_pivot_element(numbers):
     if pivot_settings == 3:
         index = get_index_of_median(numbers)
         pivot = numbers[index]
-        del numbers[index]
-        return pivot, numbers
+        return pivot, [value for i, value in enumerate(numbers) if i != index]
 
 
 def sort_and_count_comparisons(numbers):
@@ -55,23 +54,13 @@ def subroutine(numbers):
     return left, pivot, right
 
 
-a = [3,
-     9,
-     8,
-     4,
-     6,
-     10,
-     2,
-     5,
-     7,
-     1]
-for i in [1,2,3]:
+test = [3, 9, 8, 4, 6, 10, 2, 5, 7, 1]
+
+for i in [1, 2, 3]:
     pivot_settings = i
-    
-    sorted_array, count = sort_and_count_comparisons(a)
+
+    sorted_array, count = sort_and_count_comparisons(test)
 
     print(sorted_array)
 
     print(count)
-
-# print(choose_pivot_element(a))
